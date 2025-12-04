@@ -46,21 +46,33 @@ class HalfAdder extends Module{
 class FullAdder extends Module{
 
   val io = IO(new Bundle {
-    /* 
-     * TODO: Define IO ports of a half adder as presented in the lecture
-     */
+    val a = Input(UInt(1.W))
+    val b = Input(UInt(1.W))
+    val ci = Input(UInt(1.W))
+    val s = Output(UInt(1.W))
+    val c0 = Output(UInt(1.W))
     })
 
+  //Instanciate the two half adders that will be used to implement FA
+  val Ha_adder1 = Module(new HalfAdder)
+  val Ha_adder2 = Module(new HalfAdder)
+  
+  // Mapping a&b signals of FA to the first HA inputs
+  Ha_adder1.io.a := io.a
+  Ha_adder1.io.b := io.b
+  // defined internal signals to connect the outputs of first HA
+  val s1 = Ha_adder1.io.s
+  val c1 = Ha_adder1.io.c0
+  
+  Ha_adder2.io.a := s1    // Connect the sum signal of first HA to the first input of second HA
+  Ha_adder2.io.b := io.ci   // Connect the ci of FA to the second input of second HA
 
-  /* 
-   * TODO: Instanciate the two half adders you want to use based on your HalfAdder class
-   */
+  // defined internal signals to connect the outputs of second HA
+  val s2 = Ha_adder2.io.s
+  val c2 = Ha_adder2.io.c0
 
-
-  /* 
-   * TODO: Describe output behaviour based on the input values and the internal signals
-   */
-
+  io.s := s2          // s= a XOR b XOR ci
+  io.c0 := c1 | c2    // c0= (a.b) | (ci.(a XOR b))
 }
 
 /** 

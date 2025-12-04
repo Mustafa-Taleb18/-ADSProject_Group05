@@ -20,14 +20,54 @@ class FullAdderTester extends AnyFlatSpec with ChiselScalatestTester {
   "FullAdder" should "work" in {
     test(new FullAdder).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
 
-          /*dut.io.a.poke(...)
-           *dut.io.b.poke(...)
-           *dut.io.ci.poke(...)
-           *dut.io.s.expect(...)
-           *dut.io.co.expect(...)
-           *...
-           *TODO: Insert your test cases
-           */
+        // Truth Table Implementaoin (case-1) : a=0,b=0,ci=0
+        dut.io.a.poke(0.U)
+        dut.io.b.poke(0.U)
+        dut.io.ci.poke(0.U)
+        dut.io.s.expect(0.U)
+        dut.io.c0.expect(0.U)
+        // Truth Table Implementaoin (case-2) : a=0,b=0,ci=1
+        dut.io.a.poke(0.U)
+        dut.io.b.poke(0.U)
+        dut.io.ci.poke(1.U)
+        dut.io.s.expect(1.U)
+        dut.io.c0.expect(0.U)
+        // Truth Table Implementaoin (case-3) : a=0,b=1,ci=0
+        dut.io.a.poke(0.U)
+        dut.io.b.poke(1.U)
+        dut.io.ci.poke(0.U)
+        dut.io.s.expect(1.U)
+        dut.io.c0.expect(0.U)
+        // Truth Table Implementaoin (case-4) : a=0,b=1,ci=1
+        dut.io.a.poke(0.U)
+        dut.io.b.poke(1.U)
+        dut.io.ci.poke(1.U)
+        dut.io.s.expect(0.U)
+        dut.io.c0.expect(1.U)
+        // Truth Table Implementaoin (case-5) : a=1,b=0,ci=0
+        dut.io.a.poke(1.U)
+        dut.io.b.poke(0.U)
+        dut.io.ci.poke(0.U)
+        dut.io.s.expect(1.U)
+        dut.io.c0.expect(0.U)
+        // Truth Table Implementaoin (case-6) : a=1,b=0,ci=1
+        dut.io.a.poke(1.U)
+        dut.io.b.poke(0.U)
+        dut.io.ci.poke(1.U)
+        dut.io.s.expect(0.U)
+        dut.io.c0.expect(1.U)
+        // Truth Table Implementaoin (case-7) : a=1,b=1,ci=0
+        dut.io.a.poke(1.U)
+        dut.io.b.poke(1.U)
+        dut.io.ci.poke(0.U)
+        dut.io.s.expect(0.U)
+        dut.io.c0.expect(1.U)
+        // Truth Table Implementaoin (case-8) : a=1,b=1,ci=1
+        dut.io.a.poke(1.U)
+        dut.io.b.poke(1.U)
+        dut.io.ci.poke(1.U)
+        dut.io.s.expect(1.U)
+        dut.io.c0.expect(1.U)
 
         }
     } 
