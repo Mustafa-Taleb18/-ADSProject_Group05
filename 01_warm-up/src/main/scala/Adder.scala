@@ -88,17 +88,47 @@ class FullAdder extends Module{
 class FourBitAdder extends Module{
 
   val io = IO(new Bundle {
-    /* 
-     * TODO: Define IO ports of a 4-bit ripple-carry-adder as presented in the lecture
-     */
+    val a = Input(UInt(4.W))
+    val b = Input(UInt(4.W))
+    val s = Output(UInt(4.W))
+    val co = Output(Bool())
     })
 
-  /* 
-   * TODO: Instanciate the full adders and one half adderbased on the previously defined classes
-   */
+    // Instanciate the full adders (n-1) and one half adderbased on the previously defined classes
+    val HA_adder = Module(new(HalfAdder))
+    val FA_adder1 = Module(new(FullAdder))
+    val FA_adder2 = Module(new(FullAdder))
+    val FA_adder3 = Module(new(FullAdder))
 
+    // Connect a0 and b0 to the HA and connect the output to internal signals
+    HA_adder.io.a := io.a(0)
+    HA_adder.io.b := io.b(0)
+    val s0 = HA_adder.io.s
+    val c0 = HA_adder.io.c0
 
-  /* 
-   * TODO: Describe output behaviour based on the input values and the internal 
-   */
+    // Connect a1 and b1 to the 1st FA and connect the output to internal signals
+    FA_adder1.io.a := io.a(1)
+    FA_adder1.io.b := io.b(1)
+    FA_adder1.io.ci := c0
+    val s1 = FA_adder1.io.s
+    val c1 = FA_adder1.io.c0
+
+    // Connect a2 and b2 to the 2nd FA and connect the output to internal signals
+    FA_adder2.io.a := io.a(2)
+    FA_adder2.io.b := io.b(2)
+    FA_adder2.io.ci := c1
+    val s2 = FA_adder2.io.s
+    val c2 = FA_adder2.io.c0
+
+    // Connect a3 and b3 to the 3nd FA and connect the output to internal signals
+    FA_adder3.io.a := io.a(3)
+    FA_adder3.io.b := io.b(3)
+    FA_adder3.io.ci := c2
+    val s3 = FA_adder3.io.s
+    val c3 = FA_adder3.io.c0
+
+   // Display the output s and c
+    io.s := Cat(s3, s2, s1, s0)  // io.s is a UInt,cannot assign to individual bits eg. s(0)
+    io.co := c3
+
 }
