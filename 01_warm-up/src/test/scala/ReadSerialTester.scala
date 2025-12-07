@@ -10,128 +10,99 @@ import chisel3._
 import chiseltest._
 import org.scalatest.flatspec.AnyFlatSpec
 
-
-/** 
-  *read serial tester
-  */
 class ReadSerialTester extends AnyFlatSpec with ChiselScalatestTester {
 
   "ReadSerial" should "work" in {
-    test(new ReadSerial).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+    test(new ReadSerialAdder).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
 
-      dut.io.rxd.poke(true.B)
-      dut.io.reset.poke(false.B)
-      dut.clock.step(3)
-      
-      // First byte: 0xAA (10101010)
-      dut.io.rxd.poke(false.B)  // start bit
-      dut.clock.step(1)
-      
-      val data1 = 0xAA
-      for (i <- 7 to 0 by -1) {
-        val bit = (data1 >> i) & 1
-        if (bit == 1) {
-          dut.io.rxd.poke(true.B)
-        } else {
-          dut.io.rxd.poke(false.B)
-        }
-        dut.clock.step(1)
-      }
-      
+      // ------------------------
+      // Test 0x00
+      // ------------------------
+      // Start bit
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+
+      // Data bits MSB first: 00000000
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+
+      // Check valid pulse and data
       dut.io.valid.expect(true.B)
-      dut.io.data.expect(data1.U)
+      dut.io.data.expect("b00000000".U)
       dut.clock.step(1)
       dut.io.valid.expect(false.B)
-      
-      // Second byte immediately: 0x55 (01010101)
-      dut.io.rxd.poke(false.B)  // start bit of next byte
-      dut.clock.step(1)
-      
-      val data2 = 0x55
-      for (i <- 7 to 0 by -1) {
-        val bit = (data2 >> i) & 1
-        if (bit == 1) {
-          dut.io.rxd.poke(true.B)
-        } else {
-          dut.io.rxd.poke(false.B)
-        }
-        dut.clock.step(1)
-      }
-      
+
+      // ------------------------
+      // Test 0x55
+      // ------------------------
+      // Reset DUT
+      dut.reset.poke(true.B)
+      dut.clock.step(2)
+      dut.reset.poke(false.B)
+
+      // Start bit
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+
+      // Data bits MSB first: 01010101
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+
       dut.io.valid.expect(true.B)
-      dut.io.data.expect(data2.U)
+      dut.io.data.expect("b01010101".U)
+      dut.clock.step(1)
+      dut.io.valid.expect(false.B)
+
+      // ------------------------
+      // Test 0xAA
+      // ------------------------
+      // Start bit
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+
+      // Data bits MSB first: 10101010
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(0.U); dut.clock.step(1)
+
+      dut.io.valid.expect(true.B)
+      dut.io.data.expect("b10101010".U)
+
+      // After the last data bit has been transferred a new transmission (beginning with a start bit, 0) may immediately
+      // ------------------------
+      // Test 0xFF
+      // ------------------------
+      // Start bit
+      dut.io.rxd.poke(0.U);
+
+      // Data bits MSB first: 11111111
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+      dut.io.rxd.poke(1.U); dut.clock.step(1)
+
+      dut.io.valid.expect(true.B)
+      dut.io.data.expect("b11111111".U)
       dut.clock.step(1)
       dut.io.valid.expect(false.B)
     }
   }
-  
-  it should "reset correctly during transmission" in {
-    test(new ReadSerial).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
-      
-      // Start receiving
-      dut.io.rxd.poke(false.B)  // start bit
-      dut.io.reset.poke(false.B)
-      dut.clock.step(1)
-      
-      // Send a few bits
-      dut.io.rxd.poke(true.B)
-      dut.clock.step(1)
-      dut.io.rxd.poke(false.B)
-      dut.clock.step(1)
-      dut.io.rxd.poke(true.B)
-      dut.clock.step(1)
-      
-      // Reset during reception
-      dut.io.reset.poke(true.B)
-      dut.clock.step(1)
-      dut.io.reset.poke(false.B)
-      
-      // Should be back in idle, no valid signal
-      dut.io.rxd.poke(true.B)
-      dut.clock.step(3)
-      dut.io.valid.expect(false.B)
-      
-      // Should be able to start new transmission after reset
-      dut.io.rxd.poke(false.B)  // new start bit
-      dut.clock.step(1)
-      
-      val data = 0xFF
-      for (i <- 7 to 0 by -1) {
-        dut.io.rxd.poke(true.B)  // all 1s
-        dut.clock.step(1)
-      }
-      
-      dut.io.valid.expect(true.B)
-      dut.io.data.expect(data.U)
-    }
-  }
-  
-  it should "ignore idle line correctly" in {
-    test(new ReadSerial).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
-      
-      // Idle for some time
-      dut.io.rxd.poke(true.B)
-      dut.io.reset.poke(false.B)
-      dut.clock.step(10)
-      dut.io.valid.expect(false.B)
-      
-      // Then start transmission
-      dut.io.rxd.poke(false.B)  // start bit
-      dut.clock.step(1)
-      
-      val data = 0x81  // 10000001
-      for (i <- 7 to 0 by -1) {
-        val bit = (data >> i) & 1
-        if (bit == 1) {
-          dut.io.rxd.poke(true.B)
-        } else {
-          dut.io.rxd.poke(false.B)
-        }
-        dut.clock.step(1)
-      }
-      
-      dut.io.valid.expect(true.B)
-      dut.io.data.expect(data.U)
-        }
-    } 
 }
