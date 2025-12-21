@@ -152,40 +152,59 @@ class ALUSLL_SRL_SRATest extends AnyFlatSpec with ChiselScalatestTester {
     test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       dut.clock.setTimeout(0)
 
-      // --- SLL Tests ---
-      c.io.operandA.poke(0x00000001.U)
-      c.io.operandB.poke(0.U)
-      c.io.operation.poke(ALUOp.SLL)
-      c.io.aluResult.expect(0x00000001.U) // shift by 0
 
-      c.io.operandB.poke(31.U)
-      c.io.aluResult.expect(0x80000000.U) // shift MSB
+      //  SLL TESTS 
+      // Test 1 : 1 << 0 = 1
+      dut.io.operandA.poke(1.U)
+      dut.io.operandB.poke(0.U)
+      dut.io.operation.poke(ALUOp.SLL)
+      dut.io.aluResult.expect(1.U)
 
-      c.io.operandB.poke(32.U) // masked to 0
-      c.io.aluResult.expect(0x00000001.U)
+      // Test 2 :1 << 31 = 0x80000000
+      dut.io.operandA.poke(1.U)
+      dut.io.operandB.poke(31.U)
+      dut.io.operation.poke(ALUOp.SLL)
+      dut.io.aluResult.expect(BigInt("80000000", 16).U)
 
-      // --- SRL Tests ---
-      c.io.operandA.poke(0x80000000.U)
-      c.io.operandB.poke(31.U)
-      c.io.operation.poke(ALUOp.SRL)
-      c.io.aluResult.expect(0x00000001.U) // logical shift
+      // Test 3 : Shift with operandB > 31 (masked to 0)
+      dut.io.operandA.poke(1.U)
+      dut.io.operandB.poke(32.U) // 32 -> 0 after masking
+      dut.io.operation.poke(ALUOp.SLL)
+      dut.io.aluResult.expect(1.U)
 
-      c.io.operandB.poke(32.U) // masked to 0
-      c.io.aluResult.expect(0x80000000.U)
+      //  SRL TESTS 
+      // Test 1 : 0x80000000 >> 31 = 1
+      dut.io.operandA.poke(BigInt("80000000", 16).U)
+      dut.io.operandB.poke(31.U)
+      dut.io.operation.poke(ALUOp.SRL)
+      dut.io.aluResult.expect(1.U)
 
-      // --- SRA Tests ---
-      c.io.operandA.poke("h80000000".U) // -2147483648
-      c.io.operandB.poke(31.U)
-      c.io.operation.poke(ALUOp.SRA)
-      c.io.aluResult.expect("hFFFFFFFF".U) // arithmetic shift, keeps sign
+      // Test 2 : Shift with operandB > 31 (masked to 0)
+      dut.io.operandA.poke(BigInt("80000000", 16).U)
+      dut.io.operandB.poke(32.U) // masked to 0
+      dut.io.operation.poke(ALUOp.SRL)
+      dut.io.aluResult.expect(BigInt("80000000", 16).U)
 
-      c.io.operandB.poke(32.U) // masked to 0
-      c.io.aluResult.expect("h80000000".U)
+      //  SRA TESTS 
+      // Test 1 : Arithmetic shift: -8 >> 2 = -2
+      dut.io.operandA.poke(BigInt("FFFFFFF8", 16).U) // -8 as UInt
+      dut.io.operandB.poke(2.U)
+      dut.io.operation.poke(ALUOp.SRA)
+      dut.io.aluResult.expect(BigInt("FFFFFFFE", 16).U) // -2
 
-      // Regular SRA shift
-      c.io.operandA.poke("hFFFFFFF8".U) // -8
-      c.io.operandB.poke(2.U)
-      c.io.aluResult.expect("hFFFFFFFE".U)
+      // Test 2 :Arithmetic shift: -2147483648 >> 31 = -1
+      dut.io.operandA.poke(BigInt("80000000", 16).U) // -2^31
+      dut.io.operandB.poke(31.U)
+      dut.io.operation.poke(ALUOp.SRA)
+      dut.io.aluResult.expect(BigInt("FFFFFFFF", 16).U)
+
+      // Test 3 :Shift by 0 (no change)
+      dut.io.operandB.poke(0.U)
+      dut.io.aluResult.expect(BigInt("80000000", 16).U)
+
+      // Test 4 :Shift by >31 (masked to 0)
+      dut.io.operandB.poke(32.U)
+      dut.io.aluResult.expect(BigInt("80000000", 16).U)
     }
   }
 }
