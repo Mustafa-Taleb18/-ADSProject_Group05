@@ -12,7 +12,7 @@ import chisel3.util._
 import chisel3.experimental.ChiselEnum
 
 //define AluOp Enum
-object AluOp extends ChiselEnum {
+object ALUOp extends ChiselEnum {
   val ADD = Value
 }
 
@@ -20,12 +20,11 @@ object AluOp extends ChiselEnum {
 class ALU extends Module {
   
   val io = IO(new Bundle {
-    val operandA = Input(UInt(32,W))
-    val operandB = Input(UInt(32,W))
-    val operation = Input(AluOp())
-    val result = Output(UInt(32,W))
+    val operandA = Input(UInt(32.W))
+    val operandB = Input(UInt(32.W))
+    val operation = Input(ALUOp())
+    val aluResult = Output(UInt(32.W))
   })
 
-  //ToDo: implement ALU functionality according to the task specification
-
+io.aluResult := io.operandA + io.operandB
 }

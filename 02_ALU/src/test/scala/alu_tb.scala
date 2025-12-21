@@ -16,18 +16,28 @@ class ALUAddTest extends AnyFlatSpec with ChiselScalatestTester {
     test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       dut.clock.setTimeout(0)
 
+      // Test 1: Simple test
       dut.io.operandA.poke(10.U)
       dut.io.operandB.poke(10.U)
       dut.io.operation.poke(ALUOp.ADD)
       dut.io.aluResult.expect(20.U)
       dut.clock.step(1)
 
-      //ToDo: add more test cases for ADD operation
+      // Test 2: addition with zero
+      dut.io.operandA.poke(65.U)
+      dut.io.operandB.poke(0.U)
+      dut.io.aluResult.expect(65.U)
+      dut.clock.step(1)
+
+      // Test 3: wraparound (overflow)
+      dut.io.operandA.poke("hFFFFFFFF".U)
+      dut.io.operandB.poke(1.U)
+      dut.io.aluResult.expect(0.U)        // wraparound
+      dut.clock.step(1)
 
     }
   }
 }
-
 // ---------------------------------------------------
-// ToDo: Add test classes for all other ALU operations
+// Add test classes for all other ALU operations
 //---------------------------------------------------
