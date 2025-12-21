@@ -1,0 +1,20 @@
+Task 2.1 Preparation
+Before you start with the implementation, please answer the following questions:
+1. What RV32I ISA instructions use which of the described ALU operations?
+• ADD: ADD , ADDI
+• SUB: SUB
+• AND: AND, ANDI
+• OR: OR, ORI
+• XOR: XOR,XORI
+• SLL: SLL
+• SRL: SRL
+• SRA: SRA
+• SLT: SLT
+• SLTU: SLTU
+• PASSB
+2. What should happen, if the ALU receives an input other than the specified operations?
+Go to default case
+3. What corner cases should a testbench definitely cover for the described implementation?
+Arithmetic Wraparound
+Shift Boundary Conditions
+Comparison operations (-1,1)
