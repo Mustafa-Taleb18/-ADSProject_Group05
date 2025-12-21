@@ -147,3 +147,45 @@ class ALUXORTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+class ALUSLL_SRL_SRATest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_SLL_SRL_SRA_Tester" should "test SLL_SRL_SRA operation" in {
+    test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+
+      // --- SLL Tests ---
+      c.io.operandA.poke(0x00000001.U)
+      c.io.operandB.poke(0.U)
+      c.io.operation.poke(ALUOp.SLL)
+      c.io.aluResult.expect(0x00000001.U) // shift by 0
+
+      c.io.operandB.poke(31.U)
+      c.io.aluResult.expect(0x80000000.U) // shift MSB
+
+      c.io.operandB.poke(32.U) // masked to 0
+      c.io.aluResult.expect(0x00000001.U)
+
+      // --- SRL Tests ---
+      c.io.operandA.poke(0x80000000.U)
+      c.io.operandB.poke(31.U)
+      c.io.operation.poke(ALUOp.SRL)
+      c.io.aluResult.expect(0x00000001.U) // logical shift
+
+      c.io.operandB.poke(32.U) // masked to 0
+      c.io.aluResult.expect(0x80000000.U)
+
+      // --- SRA Tests ---
+      c.io.operandA.poke("h80000000".U) // -2147483648
+      c.io.operandB.poke(31.U)
+      c.io.operation.poke(ALUOp.SRA)
+      c.io.aluResult.expect("hFFFFFFFF".U) // arithmetic shift, keeps sign
+
+      c.io.operandB.poke(32.U) // masked to 0
+      c.io.aluResult.expect("h80000000".U)
+
+      // Regular SRA shift
+      c.io.operandA.poke("hFFFFFFF8".U) // -8
+      c.io.operandB.poke(2.U)
+      c.io.aluResult.expect("hFFFFFFFE".U)
+    }
+  }
+}
