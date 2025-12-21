@@ -208,3 +208,29 @@ class ALUSLL_SRL_SRATest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+class ALUSLT_SLTU_PASSBTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_SLT_SLTU_PASSBTester" should "test SLT_SLTU_PASSB operation" in {
+    test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+
+      // SLT example: -5 < 3
+      dut.io.operandA.poke(BigInt("FFFFFFFB",16).U) // -5 as 32-bit two's complement
+      dut.io.operandB.poke(3.U)
+      dut.io.operation.poke(ALUOp.SLT)
+      dut.io.aluResult.expect(1.U) // -5 < 3 -> 1
+
+      // SLTU example: 0xFFFFFFFF < 1 (unsigned)
+      dut.io.operandA.poke(BigInt("FFFFFFFF",16).U) // 4294967295
+      dut.io.operandB.poke(1.U)
+      dut.io.operation.poke(ALUOp.SLTU)
+      dut.io.aluResult.expect(0.U) // 4294967295 > 1 -> 0
+
+      // PASSB example
+      dut.io.operandA.poke(123.U)
+      dut.io.operandB.poke(456.U)
+      dut.io.operation.poke(ALUOp.PASSB)
+      dut.io.aluResult.expect(456.U)
+
+    }
+  }
+}
