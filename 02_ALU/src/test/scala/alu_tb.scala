@@ -65,11 +65,11 @@ class ALUSUBTest extends AnyFlatSpec with ChiselScalatestTester {
       dut.io.operandB.poke(1.U)
       dut.io.aluResult.expect("hFFFFFFFF".U)
 
-      // Test 4 : −100−80
+      // Test 4 : 20 - 32 = -12 (two's-complement wraparound)
       dut.io.operation.poke(ALUOp.SUB)
-      dut.io.operandA.poke("b10011100".U)
-      dut.io.operandB.poke("b10110000".U)
-      dut.io.aluResult.expect("b01001100".U)
+      dut.io.operandA.poke(20.U)
+      dut.io.operandB.poke(32.U)
+      dut.io.aluResult.expect("hFFFFFFF4".U)
 
     }
   }
