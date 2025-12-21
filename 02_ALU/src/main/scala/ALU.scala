@@ -35,10 +35,13 @@ class ALU extends Module {
       io.aluResult := io.operandA - io.operandB
     }
     is(ALUOp.AND) {
+      io.aluResult := io.operandA & io.operandB
     }
     is(ALUOp.OR) {
+      io.aluResult := io.operandA | io.operandB
     }
     is(ALUOp.XOR) {
+      io.aluResult := io.operandA ^ io.operandB
     }
     is(ALUOp.SLL) {
     }

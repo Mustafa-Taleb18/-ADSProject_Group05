@@ -99,7 +99,7 @@ class ALUANDTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 }
 
-class ALUANDTest extends AnyFlatSpec with ChiselScalatestTester {
+class ALUORTest extends AnyFlatSpec with ChiselScalatestTester {
   "ALU_OR_Tester" should "test OR operation" in {
     test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       dut.clock.setTimeout(0)
