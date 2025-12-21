@@ -41,3 +41,36 @@ class ALUAddTest extends AnyFlatSpec with ChiselScalatestTester {
 // ---------------------------------------------------
 // Add test classes for all other ALU operations
 //---------------------------------------------------
+class ALUSUBTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_SUB_Tester" should "test SUB operation" in {
+    test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+
+      // Test 1: Simple test
+      dut.io.operandA.poke(20.U)
+      dut.io.operandB.poke(10.U)
+      dut.io.operation.poke(ALUOp.SUB)
+      dut.io.aluResult.expect(10.U)
+      dut.clock.step(1)
+
+      // Test 2: substraction with zero
+      dut.io.operandA.poke(65.U)
+      dut.io.operandB.poke(0.U)
+      dut.io.aluResult.expect(65.U)
+      dut.clock.step(1)
+
+      // Test 3: wraparound (overflow)
+      dut.io.operation.poke(ALUOp.SUB)
+      dut.io.operandA.poke(0.U)
+      dut.io.operandB.poke(1.U)
+      dut.io.aluResult.expect("hFFFFFFFF".U)
+
+      // Test 4 : −100−80
+      dut.io.operation.poke(ALUOp.SUB)
+      dut.io.operandA.poke("b10011100".U)
+      dut.io.operandB.poke("b10110000".U)
+      dut.io.aluResult.expect("b01001100".U)
+
+    }
+  }
+}
