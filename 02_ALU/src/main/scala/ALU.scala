@@ -11,12 +11,19 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental.ChiselEnum
 
-//ToDo: define AluOp Enum
+//define AluOp Enum
+object AluOp extends ChiselEnum {
+  val ADD = Value
+}
+
 
 class ALU extends Module {
   
   val io = IO(new Bundle {
-    //ToDo: define IOs
+    val operandA = Input(UInt(32,W))
+    val operandB = Input(UInt(32,W))
+    val operation = Input(AluOp())
+    val result = Output(UInt(32,W))
   })
 
   //ToDo: implement ALU functionality according to the task specification
