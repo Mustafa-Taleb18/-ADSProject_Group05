@@ -213,3 +213,10 @@ If you want to set up a Linux subsystem on your Windows PC, you can find informa
 [linkedin-url]: https://linkedin.com/in/othneildrew
 -->
 [product-screenshot]: images/screenshot.png
+
+## Assignments 2
+1- CD /.../02_ALU
+2- vivado -mode tcl
+3- source ./alu_sim.tcl
+4- xsim top -runall
+
