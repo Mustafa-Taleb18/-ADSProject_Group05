@@ -2,6 +2,7 @@
 
 generated-src/
 project/
+build/
 target/
 test_run_dir/
 
@@ -9,3 +10,5 @@ test_run_dir/
 *.fir
 *.json
 *.vcd
+*.log
+*.jou
